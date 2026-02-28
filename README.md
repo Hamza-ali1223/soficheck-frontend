@@ -1,50 +1,53 @@
-# Vite & HeroUI Template
+# SOFI Check — Frontend
 
-This is a template for creating applications using Vite and HeroUI (v2).
+**Software Final Year Project Idea Checker**
 
-[Try it on CodeSandbox](https://githubbox.com/heroui-inc/vite-template)
+Check whether your FYP idea is similar to past university projects from catalogues **16SW–20SW**. The 21SW batch is not included because its catalogue is not available yet.
 
-## Technologies Used
+## Phase 1 — Getting Started
 
-- [Vite](https://vitejs.dev/guide/)
-- [HeroUI](https://heroui.com)
-- [Tailwind CSS](https://tailwindcss.com)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org)
-- [Framer Motion](https://www.framer.com/motion)
+### Prerequisites
 
-## How to Use
+- Node.js 18+
+- npm
 
-To clone the project, run the following command:
+### Setup
 
 ```bash
-git clone https://github.com/heroui-inc/vite-template.git
-```
-
-### Install dependencies
-
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
-
-```bash
+# Install dependencies
 npm install
+
+# Create environment file
+cp .env.example .env   # or create .env manually
 ```
 
-### Run the development server
+### Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+VITE_API_BASE_URL=http://localhost:8081
+```
+
+| Variable             | Description                     | Example                  |
+| -------------------- | ------------------------------- | ------------------------ |
+| `VITE_API_BASE_URL`  | Backend API base URL (required) | `http://localhost:8081`  |
+
+### Run
 
 ```bash
 npm run dev
 ```
 
-### Setup pnpm (optional)
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-If you are using `pnpm`, you need to add the following code to your `.npmrc` file:
+### CORS Note
 
-```bash
-public-hoist-pattern[]=*@heroui/*
-```
+When deploying the frontend on Vercel (or any other host) while the backend runs on a different origin, the backend must allow CORS requests from the frontend domain.
 
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
+## Tech Stack
 
-## License
-
-Licensed under the [MIT license](https://github.com/heroui-inc/vite-template/blob/main/LICENSE).
+- React 18 + TypeScript
+- Vite
+- HeroUI component library
+- Tailwind CSS v4

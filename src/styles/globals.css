@@ -3,3 +3,13 @@
 
 @source '../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
 @custom-variant dark (&:is(.dark *));
+
+/* Smooth transitions for theme switching */
+html {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Selection highlight matching the accent palette */
+::selection {
+  background-color: oklch(0.75 0.14 200 / 0.3);
+}
