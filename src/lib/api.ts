@@ -5,10 +5,6 @@ export interface QueryResult {
     text: string;
 }
 
-/**
- * Submit an FYP idea to the backend for similarity analysis.
- * Uses a 30-second AbortController timeout.
- */
 export async function queryIdea(
     abstract: string,
     technologies: string,

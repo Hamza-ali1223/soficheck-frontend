@@ -10,9 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@heroui/accordion": "^2.2.28",
     "@heroui/alert": "^2.2.31",
     "@heroui/button": "2.2.31",
     "@heroui/card": "^2.2.27",
+    "@heroui/chip": "^2.2.24",
     "@heroui/code": "2.2.24",
     "@heroui/dropdown": "2.3.31",
     "@heroui/input": "2.4.32",
@@ -23,6 +25,7 @@
     "@heroui/switch": "2.2.26",
     "@heroui/system": "2.4.27",
     "@heroui/theme": "2.4.26",
+    "@heroui/tooltip": "^2.2.28",
     "@heroui/use-theme": "2.1.10",
     "@react-aria/visually-hidden": "3.8.30",
     "@react-types/shared": "3.33.0",
