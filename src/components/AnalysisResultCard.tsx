@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardBody } from "@heroui/card";
 import { Divider } from "@heroui/divider";
 import { Accordion, AccordionItem } from "@heroui/accordion";
+import LoadingOverlay from "@/components/LoadingOverlay";
 
 import {
     extractRating,
@@ -23,8 +24,37 @@ function Icon({ name, className }: { name: string; className?: string }) {
     return <span className={`material-symbols-outlined ${className ?? ""}`}>{name}</span>;
 }
 
+/* ── Copy button ── */
+function CopyButton({ responseText }: { responseText?: string | null }) {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = useCallback(async () => {
+        if (!responseText) return;
+        try {
+            await navigator.clipboard.writeText(responseText);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch { /* clipboard not available */ }
+    }, [responseText]);
+
+    if (!responseText) return null;
+
+    return (
+        <button
+            onClick={handleCopy}
+            className="p-1.5 rounded-lg hover:bg-white/20 transition-colors cursor-pointer"
+            title="Copy results"
+        >
+            <Icon
+                name={copied ? "check" : "content_copy"}
+                className={`text-sm ${copied ? "text-green-300" : "text-white/70 hover:text-white"}`}
+            />
+        </button>
+    );
+}
+
 /* ── Result Header — Light: gradient  |  Dark: charcoal with glow ── */
-function ResultHeader({ rating }: { rating?: RatingResult | null }) {
+function ResultHeader({ rating, responseText }: { rating?: RatingResult | null; responseText?: string | null }) {
     const r = 32;
     const circ = 2 * Math.PI * r;
 
@@ -44,21 +74,22 @@ function ResultHeader({ rating }: { rating?: RatingResult | null }) {
             "bg-gradient-to-br from-indigo-600 to-[#4338ca]",
             /* Dark: charcoal with subtle border */
             "dark:from-[#252525] dark:to-[#252525] dark:border-b dark:border-indigo-400/20",
-            "p-8 text-white relative overflow-hidden",
+            "p-5 sm:p-8 text-white relative overflow-hidden",
         ].join(" ")}>
             {/* Dark decorative glow */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-600/10 dark:bg-indigo-400/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
 
-            <div className="flex items-center justify-between relative z-10">
-                <div>
-                    <h3 className="text-2xl font-black mb-1 text-white">Analysis Result</h3>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 relative z-10">
+                <div className="flex items-center gap-3">
+                    <h3 className="text-xl sm:text-2xl font-black text-white">Analysis Result</h3>
+                    {hasRating && <CopyButton responseText={responseText} />}
                 </div>
 
                 {/* Score ring + badge — only when we have a valid rating */}
                 {hasRating && (
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3 sm:gap-4">
                         {/* Score Ring */}
-                        <div className="relative size-20 flex items-center justify-center ring-glow">
+                        <div className="relative size-16 sm:size-20 flex items-center justify-center ring-glow shrink-0">
                             <svg className="size-full -rotate-90" viewBox="0 0 80 80">
                                 <circle
                                     cx="40"
@@ -82,14 +113,14 @@ function ResultHeader({ rating }: { rating?: RatingResult | null }) {
                                     transition={{ duration: 1.2, ease: "easeOut" }}
                                 />
                             </svg>
-                            <span className="absolute text-xl font-bold text-white">
+                            <span className="absolute text-lg sm:text-xl font-bold text-white">
                                 {isNa ? "N/A" : isNumeric ? `${value}/10` : "—"}
                             </span>
                         </div>
 
                         {/* Status Badge */}
                         <div className={[
-                            "backdrop-blur-md px-4 py-2 rounded-full text-sm font-bold border",
+                            "backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold border",
                             /* Light */
                             "bg-white/20 border-white/30 text-white",
                             /* Dark */
@@ -175,22 +206,15 @@ export default function AnalysisResultCard({ responseText, isLoading, error }: P
             >
                 {/* ── Header — always shown ── */}
                 {!isLoading && responseText && rating && !isBlocked ? (
-                    <ResultHeader rating={rating} />
+                    <ResultHeader rating={rating} responseText={responseText} />
                 ) : (
                     <ResultHeader />
                 )}
 
                 {/* ── Card body ── */}
                 <CardBody className="p-8">
-                    {/* Loading skeleton */}
-                    {isLoading && (
-                        <div className="space-y-4 animate-pulse">
-                            <div className="h-28 bg-gray-100 dark:bg-gray-700/30 rounded-2xl" />
-                            <div className="h-4 bg-gray-100 dark:bg-gray-700/30 rounded w-3/4" />
-                            <div className="h-4 bg-gray-100 dark:bg-gray-700/30 rounded w-1/2" />
-                            <div className="h-20 bg-gray-100 dark:bg-gray-700/30 rounded-2xl" />
-                        </div>
-                    )}
+                    {/* Loading */}
+                    {isLoading && <LoadingOverlay />}
 
                     {/* Error */}
                     {!isLoading && error && (
@@ -289,7 +313,7 @@ export default function AnalysisResultCard({ responseText, isLoading, error }: P
                                 title: "text-sm font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider",
                                 trigger: "py-3",
                                 content: "pb-4",
-                                indicator: "text-gray-400",
+                                indicator: "hidden",
                             }}
                         >
                             <AccordionItem

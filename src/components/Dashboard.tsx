@@ -1,50 +1,95 @@
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 import ProjectDetailsCard from "@/components/ProjectDetailsCard";
 import AnalysisResultCard from "@/components/AnalysisResultCard";
+import QueryHistory from "@/components/QueryHistory";
 import { apiBaseUrl } from "@/lib/config";
 import { queryIdea } from "@/lib/api";
+import { useHistory, type HistoryEntry } from "@/lib/useHistory";
 
 function Icon({ name, className }: { name: string; className?: string }) {
     return <span className={`material-symbols-outlined ${className ?? ""}`}>{name}</span>;
 }
 
+/* ── Draft auto-save helpers ── */
+const DRAFT_KEY = "sofi-draft";
+
+function loadDraft(): { abstract: string; technologies: string } {
+    try {
+        const raw = localStorage.getItem(DRAFT_KEY);
+        if (!raw) return { abstract: "", technologies: "" };
+        return JSON.parse(raw);
+    } catch {
+        return { abstract: "", technologies: "" };
+    }
+}
+
 export default function Dashboard() {
+    const draft = loadDraft();
     const [isLoading, setIsLoading] = useState(false);
     const [responseText, setResponseText] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [abstract, setAbstract] = useState("");
-    const [technologies, setTechnologies] = useState("");
+    const [abstract, setAbstract] = useState(draft.abstract);
+    const [technologies, setTechnologies] = useState(draft.technologies);
+    const { history, addEntry, clearHistory } = useHistory();
+    const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
-    async function handleSubmit(abs: string, tech: string) {
-        setIsLoading(true);
-        setError(null);
-        setResponseText(null);
+    /* ── Auto-save draft to localStorage (debounced 500ms) ── */
+    useEffect(() => {
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+        debounceRef.current = setTimeout(() => {
+            localStorage.setItem(DRAFT_KEY, JSON.stringify({ abstract, technologies }));
+        }, 500);
+        return () => {
+            if (debounceRef.current) clearTimeout(debounceRef.current);
+        };
+    }, [abstract, technologies]);
 
-        try {
-            const result = await queryIdea(abs, tech);
-            if (result.status < 200 || result.status >= 300) {
-                setError(`Server returned status ${result.status}. Please try again.`);
-                return;
+    /* ── Submit handler with double-submit guard ── */
+    const handleSubmit = useCallback(
+        async (abs: string, tech: string) => {
+            if (isLoading) return; // prevent double-submit
+            setIsLoading(true);
+            setError(null);
+            setResponseText(null);
+
+            try {
+                const result = await queryIdea(abs, tech);
+                if (result.status < 200 || result.status >= 300) {
+                    setError(`Server returned status ${result.status}. Please try again.`);
+                    return;
+                }
+                setResponseText(result.text);
+                addEntry(abs, tech, result.text);
+            } catch (err: unknown) {
+                if (err instanceof DOMException && err.name === "AbortError") {
+                    setError("Request timed out after 60 seconds. The server may be overloaded — please try again.");
+                } else if (err instanceof Error) {
+                    setError(err.message);
+                } else {
+                    setError("An unexpected error occurred. Please try again.");
+                }
+            } finally {
+                setIsLoading(false);
             }
-            setResponseText(result.text);
-        } catch (err: unknown) {
-            if (err instanceof DOMException && err.name === "AbortError") {
-                setError("Request timed out after 30 seconds. Please try again.");
-            } else if (err instanceof Error) {
-                setError(err.message);
-            } else {
-                setError("An unexpected error occurred. Please try again.");
-            }
-        } finally {
-            setIsLoading(false);
-        }
-    }
+        },
+        [isLoading, addEntry],
+    );
 
+    /* ── Clear form + draft ── */
     function handleClear() {
         setAbstract("");
         setTechnologies("");
         setResponseText(null);
+        setError(null);
+        localStorage.removeItem(DRAFT_KEY);
+    }
+
+    /* ── Restore from history ── */
+    function handleHistorySelect(entry: HistoryEntry) {
+        setAbstract(entry.abstract);
+        setTechnologies(entry.technologies);
+        setResponseText(entry.responseText);
         setError(null);
     }
 
@@ -106,6 +151,13 @@ export default function Dashboard() {
                     </ul>
                 </div>
             </div>
+
+            {/* ─── Query History ─── */}
+            <QueryHistory
+                history={history}
+                onSelect={handleHistorySelect}
+                onClear={clearHistory}
+            />
 
             {/* ─── Grid — 4/6 split ─── */}
             <div className="grid grid-cols-1 lg:grid-cols-10 gap-8">
