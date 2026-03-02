@@ -66,27 +66,51 @@ export default function Dashboard() {
     }
 
     return (
-        <main className="flex-1">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Hero */}
-                <div className="text-center mb-10">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 rounded-full mb-4">
-                        <div className="size-1.5 bg-primary rounded-full" />
-                        <span className="text-xs font-semibold text-primary tracking-widest uppercase">
-                            FYP Uniqueness Engine
-                        </span>
-                    </div>
-                    <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                        Project Uniqueness Checker
-                    </h1>
-                    <p className="mt-3 text-base text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
-                        Analyze your Final Year Project against catalogues{" "}
-                        <span className="font-semibold text-slate-700 dark:text-slate-200">16SW–20SW</span>
-                    </p>
-                </div>
+        <main className="max-w-7xl mx-auto px-4 py-12">
+            {/* ─── Hero Section ─── */}
+            <section className="text-center mb-16">
+                <h2 className="text-5xl font-black text-gray-900 dark:text-white mb-4 tracking-tight">
+                    Project Uniqueness Checker
+                </h2>
+                <p className="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
+                    Analyze your Final Year Project against catalogues{" "}
+                    <span className="font-semibold text-gray-700 dark:text-gray-200">16SW–20SW</span>{" "}
+                    to ensure academic integrity and originality.
+                </p>
+            </section>
 
-                {/* Grid */}
-                <div className="grid lg:grid-cols-12 gap-8">
+            {/* ─── How It Works ─── */}
+            <div className="max-w-2xl mx-auto mb-12">
+                <div className="bg-indigo-50/60 dark:bg-indigo-900/20 border border-indigo-200/40 dark:border-indigo-800/30 rounded-2xl p-5">
+                    <div className="flex items-center gap-2 mb-3">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="shrink-0">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z" className="stroke-indigo-600 dark:stroke-indigo-400" strokeWidth="2" strokeLinejoin="round" />
+                            <path d="M2 17l10 5 10-5" className="stroke-indigo-600 dark:stroke-indigo-400" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M2 12l10 5 10-5" className="stroke-indigo-600 dark:stroke-indigo-400" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">How It Works</h3>
+                    </div>
+                    <ul className="space-y-2.5 text-sm text-gray-600 dark:text-slate-300">
+                        <li className="flex items-start gap-2.5">
+                            <span className="flex items-center justify-center size-5 rounded-full bg-indigo-600 dark:bg-indigo-400 text-white dark:text-gray-900 text-xs font-bold shrink-0 mt-0.5">1</span>
+                            Enter your project's core technologies and abstract
+                        </li>
+                        <li className="flex items-start gap-2.5">
+                            <span className="flex items-center justify-center size-5 rounded-full bg-indigo-600 dark:bg-indigo-400 text-white dark:text-gray-900 text-xs font-bold shrink-0 mt-0.5">2</span>
+                            Our AI cross-references against FYP catalogues 16SW–20SW
+                        </li>
+                        <li className="flex items-start gap-2.5">
+                            <span className="flex items-center justify-center size-5 rounded-full bg-indigo-600 dark:bg-indigo-400 text-white dark:text-gray-900 text-xs font-bold shrink-0 mt-0.5">3</span>
+                            Get a Similarity Score and get to know which projects are similar to your idea from the existing catalogues.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            {/* ─── Grid — 4/6 split ─── */}
+            <div className="grid grid-cols-1 lg:grid-cols-10 gap-8">
+                {/* Left column: Input (40%) */}
+                <div className="lg:col-span-4">
                     <ProjectDetailsCard
                         abstract={abstract}
                         setAbstract={setAbstract}
@@ -96,12 +120,14 @@ export default function Dashboard() {
                         onSubmit={handleSubmit}
                         onClear={handleClear}
                     />
-                    <AnalysisResultCard
-                        responseText={responseText}
-                        isLoading={isLoading}
-                        error={error}
-                    />
                 </div>
+
+                {/* Right column: Result (60%) */}
+                <AnalysisResultCard
+                    responseText={responseText}
+                    isLoading={isLoading}
+                    error={error}
+                />
             </div>
         </main>
     );

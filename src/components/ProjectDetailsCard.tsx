@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { Card, CardBody } from "@heroui/card";
+import { Button } from "@heroui/button";
 
 interface Props {
     abstract: string;
@@ -42,66 +43,65 @@ export default function ProjectDetailsCard({
     }
 
     return (
-        <div className="lg:col-span-7">
-            <div className="bg-white dark:bg-slate-800/50 rounded-2xl shadow-refined dark:shadow-refined-dark border border-slate-200/60 dark:border-slate-700/60 overflow-hidden">
+        <Card
+            classNames={{
+                base: [
+                    /* Light */
+                    "bg-indigo-input-bg border border-indigo-600/10 border-t-4 border-t-indigo-600 rounded-xl shadow-sm",
+                    /* Dark */
+                    "dark:bg-input-card-dark dark:border-gray-800 dark:border-t-indigo-400 dark:shadow-lg dark:shadow-black/50",
+                    "sticky top-24 overflow-hidden",
+                ].join(" "),
+            }}
+            shadow="none"
+        >
+            <CardBody className="p-8">
                 {/* Card header */}
-                <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-700/50">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-                                Project Details
-                            </h2>
-                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-                                Define your project for uniqueness analysis
-                            </p>
-                        </div>
-                        <div className="flex items-center justify-center size-10 bg-primary/10 rounded-xl">
-                            <Icon name="edit_square" className="text-primary text-xl" />
-                        </div>
-                    </div>
+                <div className="flex items-center justify-between mb-8">
+                    <h3 className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
+                        Project Details
+                    </h3>
+                    <Icon name="edit_square" className="text-indigo-600 dark:text-indigo-400 cursor-pointer hover:bg-indigo-600/10 dark:hover:bg-indigo-400/10 p-1 rounded-md" />
                 </div>
 
-                {/* Card body */}
-                <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Technologies */}
                     <div>
-                        <label htmlFor="tech" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        <label htmlFor="tech" className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">
                             Core Technologies
                         </label>
                         <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <Icon name="code" className="text-slate-400 text-xl" />
-                            </div>
+                            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500 text-xl">code</span>
                             <input
                                 id="tech"
                                 type="text"
-                                placeholder="e.g., React, Node.js, MongoDB"
+                                placeholder="e.g. React, Python, TensorFlow"
                                 value={technologies}
                                 onChange={(e) => setTechnologies(e.target.value)}
                                 disabled={isLoading}
-                                className="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all disabled:opacity-50"
+                                className="w-full pl-10 pr-4 py-3 bg-white dark:bg-input-dark border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-text-primary dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 dark:focus:ring-indigo-400/50 dark:focus:border-indigo-400 transition-all disabled:opacity-50"
                             />
                         </div>
                     </div>
 
                     {/* Abstract */}
                     <div>
-                        <label htmlFor="abstract" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        <label htmlFor="abstract" className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">
                             Project Abstract
                         </label>
                         <textarea
                             id="abstract"
-                            rows={6}
-                            placeholder="Describe your project idea, objectives, and methodology in detail..."
+                            rows={8}
+                            placeholder="Paste your detailed abstract here..."
                             value={abstract}
                             onChange={(e) => {
                                 setAbstract(e.target.value);
                                 if (!touched) setTouched(true);
                             }}
                             disabled={isLoading}
-                            className={`w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border rounded-xl text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all resize-none disabled:opacity-50 ${isEmpty || tooShort
+                            className={`w-full p-4 bg-white dark:bg-input-dark border rounded-xl text-sm text-text-primary dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 dark:focus:ring-indigo-400/50 dark:focus:border-indigo-400 transition-all resize-none disabled:opacity-50 ${isEmpty || tooShort
                                 ? "border-red-400 dark:border-red-500"
-                                : "border-slate-200 dark:border-slate-700"
+                                : "border-gray-200 dark:border-gray-700"
                                 }`}
                         />
                         <div className="flex items-center justify-between mt-1.5 px-1">
@@ -115,46 +115,43 @@ export default function ProjectDetailsCard({
                                     </p>
                                 )}
                             </div>
-                            <p className="text-xs text-slate-400">{charCount} characters</p>
+                            <p className="text-xs text-gray-400">{charCount} characters</p>
                         </div>
                     </div>
 
                     {/* Buttons */}
-                    <div className="flex items-center justify-between pt-2">
-                        <button
+                    <div className="flex items-center justify-between gap-3 pt-4">
+                        <Button
                             type="button"
-                            onClick={handleClear}
-                            disabled={isLoading}
-                            className="px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl transition-colors disabled:opacity-50"
+                            variant="bordered"
+                            onPress={handleClear}
+                            isDisabled={isLoading}
+                            className="font-medium text-gray-600 dark:text-slate-400 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-white/5 dark:hover:text-white rounded-xl"
                         >
                             Clear Form
-                        </button>
+                        </Button>
 
-                        <motion.button
+                        <Button
                             type="submit"
-                            disabled={isLoading}
-                            className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-dark rounded-xl shadow-lg shadow-primary/25 transition-all disabled:opacity-70"
-                            whileHover={{ y: -2 }}
-                            whileTap={{ scale: 0.98 }}
-                        >
-                            {isLoading ? (
-                                <>
+                            isDisabled={isLoading}
+                            className="cta-glow font-bold px-8 py-3 bg-indigo-600 dark:bg-indigo-400 text-white shadow-lg shadow-indigo-600/25 dark:shadow-indigo-400/20 rounded-xl flex items-center justify-center gap-2"
+                            size="lg"
+                            startContent={
+                                isLoading ? (
                                     <svg className="animate-spin size-4" viewBox="0 0 24 24" fill="none">
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                                     </svg>
-                                    Analyzing…
-                                </>
-                            ) : (
-                                <>
+                                ) : (
                                     <Icon name="analytics" className="text-lg" />
-                                    Analyze Uniqueness
-                                </>
-                            )}
-                        </motion.button>
+                                )
+                            }
+                        >
+                            {isLoading ? "Checking…" : "Check Similarity"}
+                        </Button>
                     </div>
                 </form>
-            </div>
-        </div>
+            </CardBody>
+        </Card>
     );
 }

@@ -28,36 +28,29 @@ export default function Header() {
     }
 
     return (
-        <header className="sticky top-0 z-50 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800/60">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-16">
-                    {/* Left */}
-                    <div className="flex items-center gap-3">
-                        <div className="flex items-center justify-center size-9 bg-primary/10 rounded-xl shadow-inner">
-                            <Icon name="verified" className="text-primary text-xl" />
-                        </div>
-                        <span className="text-lg font-bold text-slate-900 dark:text-white">
-                            SOFI Check
-                        </span>
+        <header className="sticky top-0 z-50 w-full bg-white/80 dark:bg-[#121212]/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
+            <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+                {/* Logo + Brand */}
+                <div className="flex items-center gap-3">
+                    <div className="bg-indigo-600/10 dark:bg-indigo-400/10 p-2 rounded-lg flex items-center justify-center">
+                        <Icon name="verified_user" className="text-indigo-600 dark:text-indigo-400 text-2xl font-bold" />
                     </div>
+                    <h1 className="text-xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+                        SOFI Check
+                    </h1>
+                </div>
 
-                    {/* Center nav */}
-                    <nav className="hidden sm:flex items-center gap-1">
-                        <button className="px-4 py-2 text-sm font-medium text-primary bg-primary/10 rounded-xl transition-colors">
-                            Dashboard
-                        </button>
-                        <button className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
-                            About
-                        </button>
-                    </nav>
-
-                    {/* Right */}
+                {/* Dark mode toggle */}
+                <div className="flex items-center gap-4">
                     <button
                         onClick={toggleTheme}
-                        className="flex items-center justify-center size-10 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300"
                         aria-label="Toggle theme"
+                        className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
                     >
-                        <Icon name={dark ? "dark_mode" : "light_mode"} className="text-xl" />
+                        <Icon
+                            name={dark ? "light_mode" : "dark_mode"}
+                            className="text-gray-500 dark:text-slate-400"
+                        />
                     </button>
                 </div>
             </div>

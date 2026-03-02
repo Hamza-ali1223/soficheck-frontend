@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Card, CardBody } from "@heroui/card";
+import { Divider } from "@heroui/divider";
+import { Accordion, AccordionItem } from "@heroui/accordion";
 
 import {
     extractRating,
@@ -20,13 +23,14 @@ function Icon({ name, className }: { name: string; className?: string }) {
     return <span className={`material-symbols-outlined ${className ?? ""}`}>{name}</span>;
 }
 
-/* ── Animated Score Ring ── */
-function ScoreRing({ rating }: { rating: RatingResult }) {
-    const r = 40;
+/* ── Result Header — Light: gradient  |  Dark: charcoal with glow ── */
+function ResultHeader({ rating }: { rating?: RatingResult | null }) {
+    const r = 32;
     const circ = 2 * Math.PI * r;
 
-    const isNumeric = rating.kind === "numeric";
-    const isNa = rating.kind === "na";
+    const hasRating = rating && rating.kind !== "missing";
+    const isNumeric = rating?.kind === "numeric";
+    const isNa = rating?.kind === "na";
     const value = isNumeric ? rating.value : 0;
     const fraction = isNumeric ? value / 10 : isNa ? 1 : 0;
     const offset = circ - fraction * circ;
@@ -35,45 +39,66 @@ function ScoreRing({ rating }: { rating: RatingResult }) {
     const label = isNa ? "Likely Unique" : ratingInfo?.label ?? "Unknown";
 
     return (
-        <div className="bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl p-5 text-white">
-            <div className="flex items-center gap-5">
-                {/* Ring */}
-                <div className="relative size-24 shrink-0 ring-glow">
-                    <svg viewBox="0 0 100 100" className="size-full -rotate-90">
-                        <circle cx="50" cy="50" r={r} fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="8" />
-                        <motion.circle
-                            cx="50"
-                            cy="50"
-                            r={r}
-                            fill="none"
-                            stroke="white"
-                            strokeWidth="8"
-                            strokeLinecap="round"
-                            strokeDasharray={circ}
-                            initial={{ strokeDashoffset: circ }}
-                            animate={{ strokeDashoffset: offset }}
-                            transition={{ duration: 1.2, ease: "easeOut" }}
-                        />
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-xl font-bold">
-                            {isNa ? "N/A" : isNumeric ? `${value}/10` : "—"}
-                        </span>
-                    </div>
+        <div className={[
+            /* Light: indigo gradient */
+            "bg-gradient-to-br from-indigo-600 to-[#4338ca]",
+            /* Dark: charcoal with subtle border */
+            "dark:from-[#252525] dark:to-[#252525] dark:border-b dark:border-indigo-400/20",
+            "p-8 text-white relative overflow-hidden",
+        ].join(" ")}>
+            {/* Dark decorative glow */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-600/10 dark:bg-indigo-400/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
+
+            <div className="flex items-center justify-between relative z-10">
+                <div>
+                    <h3 className="text-2xl font-black mb-1 text-white">Analysis Result</h3>
                 </div>
 
-                {/* Text */}
-                <div>
-                    <p className="text-sm font-medium text-white/70">Uniqueness Score</p>
-                    <p className="text-xl font-bold mt-0.5">{label}</p>
-                    <p className="text-xs text-white/60 mt-1">
-                        {isNa
-                            ? "Your idea appears to be original."
-                            : isNumeric
-                                ? `Based on analysis of catalogues 16SW–20SW.`
-                                : "Rating could not be determined."}
-                    </p>
-                </div>
+                {/* Score ring + badge — only when we have a valid rating */}
+                {hasRating && (
+                    <div className="flex items-center gap-4">
+                        {/* Score Ring */}
+                        <div className="relative size-20 flex items-center justify-center ring-glow">
+                            <svg className="size-full -rotate-90" viewBox="0 0 80 80">
+                                <circle
+                                    cx="40"
+                                    cy="40"
+                                    r={r}
+                                    fill="transparent"
+                                    className="stroke-white/20 dark:stroke-gray-700"
+                                    strokeWidth="8"
+                                />
+                                <motion.circle
+                                    cx="40"
+                                    cy="40"
+                                    r={r}
+                                    fill="transparent"
+                                    className="stroke-white dark:stroke-indigo-400"
+                                    strokeWidth="8"
+                                    strokeLinecap="round"
+                                    strokeDasharray={circ}
+                                    initial={{ strokeDashoffset: circ }}
+                                    animate={{ strokeDashoffset: offset }}
+                                    transition={{ duration: 1.2, ease: "easeOut" }}
+                                />
+                            </svg>
+                            <span className="absolute text-xl font-bold text-white">
+                                {isNa ? "N/A" : isNumeric ? `${value}/10` : "—"}
+                            </span>
+                        </div>
+
+                        {/* Status Badge */}
+                        <div className={[
+                            "backdrop-blur-md px-4 py-2 rounded-full text-sm font-bold border",
+                            /* Light */
+                            "bg-white/20 border-white/30 text-white",
+                            /* Dark */
+                            "dark:bg-indigo-400/20 dark:border-indigo-400/30 dark:text-indigo-300",
+                        ].join(" ")}>
+                            {label}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -86,76 +111,35 @@ function ProjectItem({ project, index }: { project: ParsedProject; index: number
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.1 }}
-            className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 border border-transparent hover:border-slate-200 dark:hover:border-slate-600 transition-all cursor-default"
+            className="group flex items-center gap-4 p-4 border border-gray-100 dark:border-gray-800 rounded-xl project-card-hover transition-all cursor-pointer"
         >
-            <div className="flex items-center justify-center size-8 bg-amber-100 dark:bg-amber-900/30 rounded-lg shrink-0 mt-0.5">
-                <Icon name="description" className="text-amber-600 dark:text-amber-400 text-base" />
+            <div className="bg-indigo-600/10 dark:bg-indigo-400/10 p-3 rounded-lg group-hover:bg-white dark:group-hover:bg-indigo-400/20 transition-colors">
+                <Icon name="description" className="text-indigo-600 dark:text-indigo-400" />
             </div>
-            <div className="min-w-0">
-                <p className="text-sm font-medium text-slate-900 dark:text-white leading-snug">
+            <div className="flex-1 min-w-0">
+                <p className="font-bold text-gray-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                     {project.title}
                 </p>
-                <div className="flex flex-wrap gap-2 mt-1">
+                <div className="flex flex-wrap gap-1 mt-0.5">
                     {project.catalogue && (
-                        <span className="text-xs text-slate-500 dark:text-slate-400">
+                        <span className="text-xs text-gray-500 dark:text-slate-500">
                             {project.catalogue}
                         </span>
                     )}
                     {project.page && (
-                        <span className="text-xs text-slate-400 dark:text-slate-500">
+                        <span className="text-xs text-gray-400 dark:text-slate-500">
                             • Page {project.page}
                         </span>
                     )}
                 </div>
                 {project.description && (
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">
+                    <p className="text-xs text-gray-500 dark:text-slate-500 mt-1 line-clamp-2">
                         {project.description}
                     </p>
                 )}
             </div>
+            <Icon name="chevron_right" className="text-gray-300 dark:text-slate-600 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
         </motion.div>
-    );
-}
-
-/* ── Full Response Collapsible ── */
-function FullResponseCollapsible({ text }: { text: string }) {
-    const [open, setOpen] = useState(false);
-
-    return (
-        <div className="border-t border-slate-100 dark:border-slate-700/50">
-            <button
-                type="button"
-                onClick={() => setOpen(!open)}
-                className="flex items-center justify-between w-full px-6 py-3 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors"
-            >
-                <span className="flex items-center gap-2">
-                    <Icon name="unfold_more" className="text-base" />
-                    Full response
-                </span>
-                <Icon
-                    name={open ? "expand_less" : "expand_more"}
-                    className="text-base transition-transform"
-                />
-            </button>
-            <AnimatePresence>
-                {open && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25 }}
-                        className="overflow-hidden"
-                    >
-                        <pre
-                            className="px-6 pb-4 text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-sans"
-                            style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
-                        >
-                            {text}
-                        </pre>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
     );
 }
 
@@ -174,29 +158,37 @@ export default function AnalysisResultCard({ responseText, isLoading, error }: P
     const explanation = responseText ? parseExplanation(responseText) : null;
 
     return (
-        <div className="lg:col-span-5">
-            <div className="bg-white dark:bg-slate-800/50 rounded-2xl shadow-refined dark:shadow-refined-dark border border-slate-200/60 dark:border-slate-700/60 overflow-hidden lg:sticky lg:top-24">
-                {/* Card header */}
-                <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-700/50">
-                    <div className="flex items-center gap-3">
-                        <div className="flex items-center justify-center size-10 bg-primary/10 rounded-xl">
-                            <Icon name="query_stats" className="text-primary text-xl" />
-                        </div>
-                        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-                            Analysis Result
-                        </h2>
-                    </div>
-                </div>
+        <div className="lg:col-span-6 w-full min-w-0">
+            <Card
+                fullWidth
+                classNames={{
+                    base: [
+                        "w-full",
+                        /* Light */
+                        "bg-white border-2 border-result-border rounded-xl shadow-2xl shadow-indigo-600/10",
+                        /* Dark */
+                        "dark:bg-result-card-dark dark:border-gray-800 dark:shadow-2xl dark:shadow-black/50",
+                        "overflow-hidden",
+                    ].join(" "),
+                }}
+                shadow="none"
+            >
+                {/* ── Header — always shown ── */}
+                {!isLoading && responseText && rating && !isBlocked ? (
+                    <ResultHeader rating={rating} />
+                ) : (
+                    <ResultHeader />
+                )}
 
-                {/* Card body */}
-                <div className="p-6">
+                {/* ── Card body ── */}
+                <CardBody className="p-8">
                     {/* Loading skeleton */}
                     {isLoading && (
                         <div className="space-y-4 animate-pulse">
-                            <div className="h-28 bg-slate-100 dark:bg-slate-700/50 rounded-2xl" />
-                            <div className="h-4 bg-slate-100 dark:bg-slate-700/50 rounded w-3/4" />
-                            <div className="h-4 bg-slate-100 dark:bg-slate-700/50 rounded w-1/2" />
-                            <div className="h-20 bg-slate-100 dark:bg-slate-700/50 rounded-2xl" />
+                            <div className="h-28 bg-gray-100 dark:bg-gray-700/30 rounded-2xl" />
+                            <div className="h-4 bg-gray-100 dark:bg-gray-700/30 rounded w-3/4" />
+                            <div className="h-4 bg-gray-100 dark:bg-gray-700/30 rounded w-1/2" />
+                            <div className="h-20 bg-gray-100 dark:bg-gray-700/30 rounded-2xl" />
                         </div>
                     )}
 
@@ -214,10 +206,10 @@ export default function AnalysisResultCard({ responseText, isLoading, error }: P
                     {/* Empty state */}
                     {!isLoading && !error && !responseText && (
                         <div className="flex flex-col items-center justify-center py-12 text-center">
-                            <div className="flex items-center justify-center size-16 bg-slate-100 dark:bg-slate-700/50 rounded-2xl mb-4">
-                                <Icon name="query_stats" className="text-slate-400 text-3xl" />
+                            <div className="flex items-center justify-center size-16 bg-gray-100 dark:bg-gray-700/30 rounded-2xl mb-4">
+                                <Icon name="query_stats" className="text-gray-400 dark:text-slate-500 text-3xl" />
                             </div>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                            <p className="text-sm text-gray-500 dark:text-slate-400">
                                 Submit your project to see analysis here.
                             </p>
                         </div>
@@ -225,80 +217,100 @@ export default function AnalysisResultCard({ responseText, isLoading, error }: P
 
                     {/* Results */}
                     {!isLoading && responseText && rating && (
-                        <motion.div
-                            key={_key}
-                            initial={{ opacity: 0, y: 12 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.4 }}
-                            className="space-y-5"
-                        >
-                            {/* Blocked warning */}
-                            {isBlocked && (
-                                <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl">
-                                    <Icon name="shield" className="text-amber-500 text-xl shrink-0 mt-0.5" />
-                                    <div>
-                                        <p className="text-sm font-medium text-amber-800 dark:text-amber-300">Request blocked by safety filter</p>
-                                        <p className="text-sm text-amber-600 dark:text-amber-400 mt-0.5">
-                                            Your input was flagged. Review your abstract and try again.
+                        <AnimatePresence>
+                            <motion.div
+                                key={_key}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, ease: "easeOut" }}
+                                className="space-y-0"
+                            >
+                                {/* Blocked warning */}
+                                {isBlocked && (
+                                    <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl">
+                                        <Icon name="shield" className="text-amber-500 text-xl shrink-0 mt-0.5" />
+                                        <div>
+                                            <p className="text-sm font-medium text-amber-800 dark:text-amber-300">Request blocked by safety filter</p>
+                                            <p className="text-sm text-amber-600 dark:text-amber-400 mt-0.5">
+                                                Your input was flagged. Review your abstract and try again.
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* ② Similar Projects */}
+                                {projects.length > 0 && (
+                                    <>
+                                        <div className="mb-8">
+                                            <h4 className="text-xs font-black text-gray-500 dark:text-slate-500 uppercase tracking-widest mb-4">
+                                                Similar Projects Found
+                                            </h4>
+                                            <div className="space-y-3">
+                                                {projects.map((p, i) => (
+                                                    <ProjectItem key={i} project={p} index={i} />
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {explanation && (
+                                            <Divider className="bg-gray-100 dark:bg-gray-800 my-2" />
+                                        )}
+                                    </>
+                                )}
+
+                                {/* ③ AI Explanation */}
+                                {explanation && (
+                                    <div className="relative bg-indigo-50/60 dark:bg-[#262626] border border-indigo-600/10 dark:border-indigo-400/20 rounded-xl p-6 overflow-hidden">
+                                        {/* Decorative blurred circle */}
+                                        <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-indigo-600/5 dark:bg-indigo-400/10 rounded-full blur-2xl" />
+
+                                        <div className="flex items-center gap-2 mb-3 text-indigo-600 dark:text-indigo-400 relative z-10">
+                                            <Icon name="auto_awesome" className="text-xl" />
+                                            <h4 className="font-bold">AI Explanation</h4>
+                                        </div>
+                                        <p className="text-gray-700 dark:text-slate-300 text-sm leading-relaxed relative z-10 font-medium">
+                                            {explanation}
                                         </p>
                                     </div>
-                                </div>
-                            )}
-
-                            {/* Score panel */}
-                            {!isBlocked && <ScoreRing rating={rating} />}
-
-                            {/* Similar Projects */}
-                            {projects.length > 0 && (
-                                <div>
-                                    <div className="flex items-center gap-2 mb-3">
-                                        <Icon name="library_books" className="text-slate-400 text-lg" />
-                                        <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
-                                            Similar Projects
-                                        </h3>
-                                        <span className="ml-auto text-xs text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded-full">
-                                            {projects.length} found
-                                        </span>
-                                    </div>
-                                    <div className="space-y-1">
-                                        {projects.map((p, i) => (
-                                            <ProjectItem key={i} project={p} index={i} />
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Explanation */}
-                            {explanation && (
-                                <div className="relative bg-primary/5 dark:bg-primary/10 border border-primary/10 dark:border-primary/20 rounded-xl p-4 overflow-hidden">
-                                    <Icon
-                                        name="psychology"
-                                        className="absolute -right-2 -bottom-2 text-6xl text-primary/10 dark:text-primary/15 pointer-events-none"
-                                    />
-                                    <div className="flex items-start gap-3 relative z-10">
-                                        <div className="flex items-center justify-center size-8 bg-primary/10 rounded-lg shrink-0 mt-0.5">
-                                            <Icon name="psychology" className="text-primary text-base" />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-medium text-primary-dark dark:text-primary-light">
-                                                AI Explanation
-                                            </p>
-                                            <p className="text-sm text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
-                                                {explanation}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        </motion.div>
+                                )}
+                            </motion.div>
+                        </AnimatePresence>
                     )}
-                </div>
+                </CardBody>
 
-                {/* Full response collapsible */}
+                {/* Full response collapsible — HeroUI Accordion */}
                 {!isLoading && responseText && (
-                    <FullResponseCollapsible text={responseText} />
+                    <div className="border-t border-gray-100 dark:border-gray-800">
+                        <Accordion
+                            variant="light"
+                            className="px-0"
+                            itemClasses={{
+                                base: "px-6",
+                                title: "text-sm font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider",
+                                trigger: "py-3",
+                                content: "pb-4",
+                                indicator: "text-gray-400",
+                            }}
+                        >
+                            <AccordionItem
+                                key="full-response"
+                                aria-label="Full response"
+                                title="Full Analysis Response"
+                                startContent={
+                                    <Icon name="expand_more" className="text-gray-400 text-base" />
+                                }
+                            >
+                                <pre
+                                    className="text-xs text-gray-500 dark:text-slate-400 leading-relaxed font-sans"
+                                    style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+                                >
+                                    {responseText}
+                                </pre>
+                            </AccordionItem>
+                        </Accordion>
+                    </div>
                 )}
-            </div>
+            </Card>
         </div>
     );
 }
