@@ -3,9 +3,11 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import ProjectDetailsCard from "@/components/ProjectDetailsCard";
 import AnalysisResultCard from "@/components/AnalysisResultCard";
 import QueryHistory from "@/components/QueryHistory";
+import ServerStatus from "@/components/ServerStatus";
 import { apiBaseUrl } from "@/lib/config";
 import { queryIdea } from "@/lib/api";
 import { useHistory, type HistoryEntry } from "@/lib/useHistory";
+
 
 function Icon({ name, className }: { name: string; className?: string }) {
     return <span className={`material-symbols-outlined ${className ?? ""}`}>{name}</span>;
@@ -117,11 +119,17 @@ export default function Dashboard() {
                 <h2 className="text-5xl font-black text-gray-900 dark:text-white mb-4 tracking-tight">
                     Project Uniqueness Checker
                 </h2>
-                <p className="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
+                <p className="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-4">
                     Analyze your Final Year Project against catalogues{" "}
                     <span className="font-semibold text-gray-700 dark:text-gray-200">16SW–20SW</span>{" "}
                     to ensure academic integrity and originality.
                 </p>
+                <p className="text-xs text-amber-700 dark:text-amber-300 bg-amber-50/60 dark:bg-amber-900/15 border border-amber-200/50 dark:border-amber-700/30 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full mb-5">
+                    <span className="material-symbols-outlined text-sm">info</span>
+                    21SW catalogue is not yet included. It will be updated as soon as it is received.
+                </p>
+                <br />
+                <ServerStatus />
             </section>
 
             {/* ─── How It Works ─── */}
