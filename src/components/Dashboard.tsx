@@ -121,12 +121,12 @@ export default function Dashboard() {
                 </h2>
                 <p className="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-4">
                     Analyze your Final Year Project against catalogues{" "}
-                    <span className="font-semibold text-gray-700 dark:text-gray-200">16SW–20SW</span>{" "}
+                    <span className="font-semibold text-gray-700 dark:text-gray-200">16SW–21SW</span>{" "}
                     to ensure academic integrity and originality.
                 </p>
-                <p className="text-xs text-amber-700 dark:text-amber-300 bg-amber-50/60 dark:bg-amber-900/15 border border-amber-200/50 dark:border-amber-700/30 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full mb-5">
-                    <span className="material-symbols-outlined text-sm">info</span>
-                    21SW catalogue is not yet included. It will be updated as soon as it is received.
+                <p className="text-xs text-blue-700 dark:text-blue-300 bg-blue-50/60 dark:bg-blue-900/15 border border-blue-200/50 dark:border-blue-700/30 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full mb-5 shadow-[0_0_12px_rgba(59,130,246,0.15)] dark:shadow-[0_0_12px_rgba(96,165,250,0.2)]">
+                    <span className="material-symbols-outlined text-sm">auto_awesome</span>
+                    21SW catalogue has been added! Results now include projects from 16SW–21SW.
                 </p>
                 <br />
                 <ServerStatus />
@@ -150,7 +150,7 @@ export default function Dashboard() {
                         </li>
                         <li className="flex items-start gap-2.5">
                             <span className="flex items-center justify-center size-5 rounded-full bg-indigo-600 dark:bg-indigo-400 text-white dark:text-gray-900 text-xs font-bold shrink-0 mt-0.5">2</span>
-                            Our AI cross-references against FYP catalogues 16SW–20SW
+                            Our AI cross-references against FYP catalogues 16SW–21SW
                         </li>
                         <li className="flex items-start gap-2.5">
                             <span className="flex items-center justify-center size-5 rounded-full bg-indigo-600 dark:bg-indigo-400 text-white dark:text-gray-900 text-xs font-bold shrink-0 mt-0.5">3</span>
