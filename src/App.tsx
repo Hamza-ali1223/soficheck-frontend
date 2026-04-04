@@ -1,6 +1,18 @@
+import type { ComponentType } from "react";
+
 import Dashboard from "@/components/Dashboard";
 import Header from "@/components/Header";
 import ParticlesBackground from "@/components/ParticlesBackground";
+
+// ── Conditional service-down override ──
+// If src/components/ServiceDown.tsx exists, it is loaded and rendered
+// instead of the Dashboard + Footer. To restore the original homepage,
+// simply delete ServiceDown.tsx — no other changes needed.
+const serviceDownModules = import.meta.glob<{ default: ComponentType }>(
+  "./components/ServiceDown.tsx",
+  { eager: true },
+);
+const ServiceDown = Object.values(serviceDownModules)[0]?.default ?? null;
 
 const githubUrl = import.meta.env.VITE_GITHUB_URL || "#";
 const contactEmail = import.meta.env.VITE_CONTACT_EMAIL || "";
@@ -70,8 +82,14 @@ function App() {
       <ParticlesBackground />
       <div className="relative z-10 flex flex-col flex-1">
         <Header />
-        <Dashboard />
-        <Footer />
+        {ServiceDown ? (
+          <ServiceDown />
+        ) : (
+          <>
+            <Dashboard />
+            <Footer />
+          </>
+        )}
       </div>
     </div>
   );
