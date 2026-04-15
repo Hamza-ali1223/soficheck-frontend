@@ -12,7 +12,6 @@ function Icon({ name, className }: { name: string; className?: string }) {
 export default function ServiceDown() {
     return (
         <main className="flex-1 w-full">
-            {/* ── Hero / Status Banner ── */}
             <section className="text-center pt-16 md:pt-24 pb-12 px-4 animate-fade-in-up">
                 <div className="inline-flex items-center justify-center size-20 rounded-2xl bg-indigo-600/10 dark:bg-indigo-400/10 mb-6 ring-glow">
                     <Icon
@@ -24,14 +23,12 @@ export default function ServiceDown() {
                     Service Temporarily Unavailable
                 </h1>
                 <p className="text-base md:text-lg text-gray-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
-                    SOFI Check's backend is currently offline. The Azure free-trial
+                    SOFI Check&apos;s backend is currently offline. The Azure free-trial
                     credits that powered this service have expired.
                 </p>
             </section>
 
-            {/* ── Info Cards ── */}
             <section className="max-w-4xl mx-auto px-4 grid md:grid-cols-2 gap-6 mb-16">
-                {/* What happened */}
                 <div
                     className="relative rounded-2xl border border-gray-200/60 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl p-6 shadow-sm animate-fade-in-up"
                     style={{ animationDelay: "0.1s" }}
@@ -61,7 +58,6 @@ export default function ServiceDown() {
                     </p>
                 </div>
 
-                {/* Personal check */}
                 <div
                     className="relative rounded-2xl border border-gray-200/60 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl p-6 shadow-sm animate-fade-in-up"
                     style={{ animationDelay: "0.2s" }}
@@ -118,7 +114,6 @@ export default function ServiceDown() {
                 </div>
             </section>
 
-            {/* ── Gallery ── */}
             <section
                 className="max-w-4xl mx-auto px-4 mb-16 animate-fade-in-up"
                 style={{ animationDelay: "0.3s" }}
@@ -141,13 +136,11 @@ export default function ServiceDown() {
                 </div>
             </section>
 
-            {/* ── About / Footer ── */}
             <footer className="max-w-3xl mx-auto px-4 py-16">
                 <div
                     className="relative rounded-2xl border border-gray-200/60 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl p-8 shadow-sm animate-fade-in-up"
                     style={{ animationDelay: "0.4s" }}
                 >
-                    {/* Header row */}
                     <div className="flex items-center gap-2.5 mb-4">
                         <div className="bg-indigo-600/10 dark:bg-indigo-400/10 p-2 rounded-xl">
                             <Icon
@@ -165,14 +158,12 @@ export default function ServiceDown() {
                         </div>
                     </div>
 
-                    {/* Purpose */}
                     <p className="text-sm text-gray-600 dark:text-slate-400 leading-relaxed mb-6">
                         I built SOFI Check to help our batch easily research and verify the
                         uniqueness of their Final Year Project ideas. Save time, avoid
                         duplicates, and start your FYP with confidence.
                     </p>
 
-                    {/* Action buttons */}
                     <div className="flex flex-wrap items-center gap-3">
                         {githubUrl !== "#" && (
                             <a
